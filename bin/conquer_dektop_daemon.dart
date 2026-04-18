@@ -7,13 +7,13 @@ void main(List<String> arguments) {
   String folderPath;
 
   if (Platform.isWindows) {
-    folderPath = join(Platform.environment['APPDATA']!, 'my_daemon');
+    folderPath = join(Platform.environment['APPDATA']!, 'conquer_daemon');
   } else {
     folderPath = join(
       Platform.environment['HOME']!,
       '.local',
       'share',
-      'my_daemon',
+      'conquer_daemon',
     );
   }
 
