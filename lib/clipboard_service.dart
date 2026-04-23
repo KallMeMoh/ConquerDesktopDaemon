@@ -78,6 +78,5 @@ class ClipboardManager {
   void dispose() {
     _timer?.cancel();
     _controller.close();
-    _logger.clearListeners();
   }
 }
