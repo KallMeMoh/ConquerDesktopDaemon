@@ -45,4 +45,13 @@ class ClipboardManager {
       await process.stdin.close();
     }
   }
+
+  void stopWatching() {
+    _timer?.cancel();
+  }
+
+  void dispose() {
+    _timer?.cancel();
+    _controller.close();
+  }
 }
