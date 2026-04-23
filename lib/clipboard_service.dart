@@ -2,10 +2,23 @@ import 'dart:io';
 import 'dart:async';
 
 class ClipboardManager {
+  String _lastClipboardContent = '';
+  Timer? _timer;
   final StreamController<String> _controller =
       StreamController<String>.broadcast();
 
   Stream<String> get clipboardStream => _controller.stream;
+
+  void startWatching({Duration interval = const Duration(microseconds: 100)}) {
+    _timer?.cancel();
+    _timer = Timer.periodic(interval, (_) async {
+      final currentContent = await _read();
+      if (currentContent != _lastClipboardContent) {
+        _lastClipboardContent = currentContent;
+        _controller.add(currentContent);
+      }
+    });
+  }
 
   Future<String> _read() async {
     ProcessResult result;
