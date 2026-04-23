@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:conquer_dektop_daemon/clipboard_service.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 
@@ -28,4 +29,6 @@ void main(List<String> arguments) {
       mode: FileMode.append,
     );
   });
+
+  final clipboardManager = ClipboardManager(Duration(milliseconds: 100));
 }
