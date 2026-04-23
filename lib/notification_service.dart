@@ -15,21 +15,31 @@ class NotificationService {
   }
 
   static void _showWindowsNotification(String title, String content) {
-    final nid = calloc<NOTIFYICONDATA>();
-    try {
-      nid.ref.cbSize = sizeOf<NOTIFYICONDATA>();
-      nid.ref.hWnd = GetDesktopWindow();
-      nid.ref.uID = 1;
-      nid.ref.uFlags = NIF_INFO;
-      nid.ref.dwInfoFlags = NIIF_INFO;
-      nid.ref.szInfoTitle = title;
-      nid.ref.szInfo = content;
+    final script = """
+    \$ErrorActionPreference = 'Stop'
+    [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType=WindowsRuntime] | Out-Null
+    \$template = [Windows.UI.Notifications.ToastTemplateType]::ToastText02
+    \$xml = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent(\$template)
+    \$nodes = \$xml.GetElementsByTagName('text')
+    \$titleNode = \$nodes.Item(0)
+    \$messageNode = \$nodes.Item(1)
+    \$titleNode.AppendChild(\$xml.CreateTextNode('$title')) | Out-Null
+    \$messageNode.AppendChild(\$xml.CreateTextNode('$content')) | Out-Null
+    \$toast = [Windows.UI.Notifications.ToastNotification]::new(\$xml)
+    \$notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('Conquer')
+    \$notifier.Show(\$toast)
+    """;
 
-      Shell_NotifyIcon(NIM_ADD, nid);
-    } finally {
-      free(nid);
+    final result = Process.runSync(
+      'powershell',
+      ['-NoProfile', '-NonInteractive', '-Command', script],
+    );
+
+    if (result.exitCode != 0) {
+      print('Error: ${result.stderr}');
     }
   }
+
 
   static Future<void> _showLinuxNotification(
     String title,
