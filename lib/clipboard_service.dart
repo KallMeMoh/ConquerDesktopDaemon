@@ -31,4 +31,18 @@ class ClipboardManager {
     }
     return result.stdout.toString().trim();
   }
+
+  Future<void> push(String text) async {
+    _lastClipboardContent = text;
+    if (Platform.isWindows) {
+      await Process.run('powershell', [
+        '-Command',
+        'Set-Clipboard -Value "$text"',
+      ]);
+    } else if (Platform.isLinux) {
+      final process = await Process.start('xclip', ['-selection', 'clipboard']);
+      process.stdin.write(text);
+      await process.stdin.close();
+    }
+  }
 }
