@@ -3,22 +3,19 @@ import 'dart:async';
 
 import 'package:logging/logging.dart';
 
-class ClipboardManager {
+class ClipboardService {
   String _lastClipboardContent = '';
   Timer? _timer;
-  final Duration duration;
   final StreamController<String> _controller =
       StreamController<String>.broadcast();
 
-  final Logger _logger = Logger('ClipboardManager');
+  final Logger _logger = Logger('ClipboardService');
 
   Stream<String> get clipboardStream => _controller.stream;
 
-  ClipboardManager(this.duration);
-
   void startWatching() {
     _timer?.cancel();
-    _timer = Timer.periodic(duration, (_) async {
+    _timer = Timer.periodic(Duration(milliseconds: 100), (_) async {
       try {
         final currentContent = await _read();
         if (currentContent != _lastClipboardContent) {
