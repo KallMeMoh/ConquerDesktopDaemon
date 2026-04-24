@@ -22,12 +22,13 @@ void main(List<String> arguments) {
 
   final logPath = join(folderPath, 'log_file.log');
 
+  final file = File(logPath);
   Logger.root.onRecord.listen((record) {
-    final file = File(logPath);
     file.writeAsStringSync(
       '${record.time}: [${record.level.name}] ${record.message}\n',
       mode: FileMode.append,
     );
+    print(record.message);
   });
 
   final clipboardManager = ClipboardManager(Duration(milliseconds: 100));
